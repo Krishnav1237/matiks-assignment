@@ -13,6 +13,7 @@ The Matiks Monitor is your sophisticated listening post for brand intelligence. 
 ## 1.1 Accessing the Interface
 - **Local:** `http://localhost:3000`
 - **Server:** `http://<your-server-ip>:3000`
+- **Mobile/Tablet:** The dashboard is fully responsive. Access it from your phone's browser while on the corporate VPN/Wi-Fi to check stats on the go.
 
 ---
 
@@ -46,9 +47,14 @@ The home page provides an at-a-glance health check of your brand.
 This is your search engine for social content.
 
 ### Advanced Filtering
+- **Search Dynamics (Auto-Search):** Just start typing. The system waits for you to pause (600ms) before automatically refreshing the results. No need to hit "Enter".
 - **Sentiment Filter:** Isolate "Negative" posts to find frustrated users. Isolate "Positive" posts for marketing testimonials.
 - **Context Search:** Search for keywords like "crash", "login", "price", or "love". Search applies to both the post content and the author's name.
 - **Date Range:** Drill down into specific marketing campaign windows.
+
+### Seamless Navigation
+- **Pagination:** Smoothly browse through thousands of mentions with centered, easy-to-hit controls at the bottom of the page.
+- **Deep Linking:** Every filter you apply updates the URL. Copy the link to share a specific view (e.g., "Positive Reddit posts about 'pricing'") with your team.
 
 ### The Feed
 - **Sentiment Badge:** Each post is tagged by our AI.

@@ -61,6 +61,13 @@ This file is the single source of truth for the application's state.
 - **Validation Rules:** Checks for valid Cron expressions, numeric ports, and defaults.
 - **Safety:** Crashes immediately on invalid config, preventing undefined runtime behavior.
 
+### `src/web/` (The Presentation Layer)
+- **`server.ts`**: The Express application entry point. Sets up middleware, static file serving (`/static` -> `src/web/public`), and API routes.
+- **`views/`**: Server-side EJS templates. Logic is kept minimal: iterating over data and rendering basic HTML structures.
+- **`public/`**: Client-side assets.
+    - **`js/main.js`**: Handles **Progressive Enhancement**. Adds debounce to search, client-side validation, and interactive feedback (e.g., loading cursors) to static forms.
+    - **`css/`**: A tiered CSS architecture (`reset`, `variables`, `layout`, `components`, `utilities`) ensuring a consistent Design System without heavy frameworks like Tailwind or Bootstrap.
+
 ### `src/core/` (Shared Utilities)
 - **`browser.ts`**: **CRITICAL**. Manages the Playwright browser instance.
     - Implements the **Singleton Pattern** to prevent resource exhaustion.
@@ -75,6 +82,17 @@ This file is the single source of truth for the application's state.
     - **Tables:** `mentions`, `reviews`, `scrape_logs`, `scrape_cursors`.
 - **`queries.ts`**: Data Access Object (DAO) layer using Prepared Statements for security and speed.
 
+## 2.4 Frontend Architecture
+The system employs a **Server-Side Rendered (SSR)** architecture with **Progressive Enhancement**.
+
+- **Structure:** `Express` renders `EJS` templates. The browser receives fully formed HTML (SEO-friendly, fast First Contentful Paint).
+- **Interactivity:** A specialized vanilla script (`main.js`) attaches listeners to search inputs and forms.
+    - **Debounce:** Search inputs wait 600ms before auto-submitting.
+    - **State:** URL Query Parameters (`?search=foo&offset=50`) drive the state. The browser URL is the single source of truth, enabling easy bookmarking and sharing.
+- **Responsiveness:**
+    - **Mobile-First CSS:** The dashboard uses CSS Grid and Flexbox with media queries to adapt from 4-column desktop layouts to single-column mobile stacks.
+    - **Fluidity:** No fixed heights. Content flows naturally, ensuring accessibility on tablets and phones.
+
 ---
 
 # 3. Part II: Automation & Site Reliability (SRE)
@@ -82,7 +100,7 @@ This file is the single source of truth for the application's state.
 ## 3.1 The Automation Engine
 Centralized in `src/scheduler/jobs.ts`, using the Node.js event loop instead of OS cron.
 - **Schedules:** defined in `.env` (Default: Every 3-4 hours).
-- **concurrency Control:** Uses an in-memory `Set<string>` as a Mutex. If "Reddit Job" is already running, a second trigger is skipped to prevent memory explosions.
+- **Concurrency Control:** Uses an in-memory `Set<string>` as a Mutex. If "Reddit Job" is already running, a second trigger is skipped to prevent memory explosions.
 
 ## 3.2 Error Recovery Hierarchy
 We classify errors into three levels:

@@ -32,11 +32,12 @@ It also **does not require official API keys** for supported platforms.
 - **Smart Rate Limiting**: Token-bucket algorithm prevents bans by throttling requests automatically.
 
 ### 📊 Visualization & Data
-- **Dark Theme Dashboard**: Overview of stats, sentiment trends, and recent activity.
-- **Data Filtering**: Filter by platform, date range, sentiment score, or keyword.
-- **CSV Export**: One-click export of all datasets for external analysis (Excel/Tableau).
-- **Google Sheets Export**: Optional full replacement export for mentions and reviews.
-- **Status API**: `/api/status` for scheduler visibility, recent logs, and rate-limit state.
+- **Dark/Light Architecture:** Clean, professional UI built with a custom Design System.
+- **Mobile-First Design:** Fully responsive dashboard that adapts to Phones, Tablets, and Desktops.
+- **Data Filtering:** Real-time URL-based filtering for seamless sharing.
+- **CSV Export:** One-click export of all datasets for external analysis (Excel/Tableau).
+- **Google Sheets Export:** Optional full replacement export for mentions and reviews.
+- **Status API:** `/api/status` for scheduler visibility, recent logs, and rate-limit state.
 
 ---
 
@@ -183,7 +184,9 @@ npm run scrape:appstore
 ### Project Structure
 *   `src/core`: Heavy lifting (Browser, Rate Limiter)
 *   `src/scrapers`: Platform logic
-*   `src/web`: Dashboard logic
+*   `src/web`: Dashboard logic (Express + EJS)
+    *   `web/public`: Static assets (CSS/JS)
+    *   `web/views`: Server-side templates
 *   `data`: Database storage
 
 ### Adding a New Scraper
