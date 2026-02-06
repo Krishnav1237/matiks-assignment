@@ -1,0 +1,57 @@
+<%- include('layout', { body: `
+<h1 style="margin-bottom: 10px;">System Logs</h1>
+<p style="color: var(--text-secondary); margin-bottom: 30px;">Monitor scraper job history and errors</p>
+
+${logs.length === 0 ? `
+<div class="empty-state">
+  <h3>No logs yet</h3>
+  <p>Run the scrapers to generate log entries.</p>
+</div>
+` : `
+<table>
+  <thead>
+    <tr>
+      <th>Started</th>
+      <th>Completed</th>
+      <th>Platform</th>
+      <th>Status</th>
+      <th>Items Found</th>
+      <th>New Items</th>
+      <th>Error</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${logs.map(log => `
+      <tr>
+        <td>${new Date(log.started_at).toLocaleString()}</td>
+        <td>${log.completed_at ? new Date(log.completed_at).toLocaleString() : '-'}</td>
+        <td><span class="platform-badge platform-${log.platform}">${log.platform}</span></td>
+        <td>
+          <span class="badge badge-${log.status === 'success' ? 'success' : log.status === 'failed' ? 'danger' : 'warning'}">
+            ${log.status}
+          </span>
+        </td>
+        <td>${log.items_found}</td>
+        <td>${log.items_new}</td>
+        <td style="color: var(--danger); max-width: 300px; word-break: break-word;">${log.error || '-'}</td>
+      </tr>
+    `).join('')}
+  </tbody>
+</table>
+`}
+
+<div style="margin-top: 30px;">
+  <h2 class="section-title">Manual Scrape Commands</h2>
+  <div style="background: var(--bg-secondary); padding: 20px; border-radius: 12px; font-family: monospace; font-size: 0.875rem;">
+    <p style="color: var(--text-secondary); margin-bottom: 10px;"># Run individual scrapers:</p>
+    <p>npm run scrape:reddit</p>
+    <p>npm run scrape:twitter</p>
+    <p>npm run scrape:linkedin</p>
+    <p>npm run scrape:playstore</p>
+    <p>npm run scrape:appstore</p>
+    <br>
+    <p style="color: var(--text-secondary); margin-bottom: 10px;"># Run all scrapers:</p>
+    <p>npm run scrape:all</p>
+  </div>
+</div>
+` }) %>

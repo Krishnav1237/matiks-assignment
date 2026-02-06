@@ -1,0 +1,107 @@
+<%- include('layout', { body: `
+<h1 style="margin-bottom: 10px;">App Store Reviews</h1>
+<p style="color: var(--text-secondary); margin-bottom: 20px;">Aggregate reviews from Google Play Store and Apple App Store</p>
+
+<form class="filters" method="GET">
+  <div class="filter-group">
+    <label>Store</label>
+    <select name="platform">
+      <option value="">All Stores</option>
+      <option value="playstore" ${filters.platform === 'playstore' ? 'selected' : ''}>Play Store</option>
+      <option value="appstore" ${filters.platform === 'appstore' ? 'selected' : ''}>App Store</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Rating</label>
+    <select name="rating">
+      <option value="">All Ratings</option>
+      <option value="5" ${filters.rating === 5 ? 'selected' : ''}>5 Stars</option>
+      <option value="4" ${filters.rating === 4 ? 'selected' : ''}>4 Stars</option>
+      <option value="3" ${filters.rating === 3 ? 'selected' : ''}>3 Stars</option>
+      <option value="2" ${filters.rating === 2 ? 'selected' : ''}>2 Stars</option>
+      <option value="1" ${filters.rating === 1 ? 'selected' : ''}>1 Star</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Sentiment</label>
+    <select name="sentiment">
+      <option value="">All</option>
+      <option value="positive" ${filters.sentiment === 'positive' ? 'selected' : ''}>Positive</option>
+      <option value="neutral" ${filters.sentiment === 'neutral' ? 'selected' : ''}>Neutral</option>
+      <option value="negative" ${filters.sentiment === 'negative' ? 'selected' : ''}>Negative</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Start Date</label>
+    <input type="date" name="startDate" value="${filters.startDate || ''}">
+  </div>
+  <div class="filter-group">
+    <label>End Date</label>
+    <input type="date" name="endDate" value="${filters.endDate || ''}">
+  </div>
+  <div class="filter-group">
+    <label>Search</label>
+    <input type="text" name="search" placeholder="Search reviews..." value="${filters.search || ''}">
+  </div>
+  <div class="filter-group" style="justify-content: flex-end;">
+    <label>&nbsp;</label>
+    <button type="submit">Apply Filters</button>
+  </div>
+  <div class="filter-group" style="justify-content: flex-end;">
+    <label>&nbsp;</label>
+    <a href="/api/export/reviews" class="btn-secondary" style="padding: 10px 20px; background: var(--bg-tertiary); border-radius: 6px;">Export CSV</a>
+  </div>
+</form>
+
+${reviews.length === 0 ? `
+<div class="empty-state">
+  <h3>No reviews found</h3>
+  <p>Run the scrapers to collect data or adjust your filters.</p>
+</div>
+` : `
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Store</th>
+      <th>Rating</th>
+      <th>Author</th>
+      <th>Title</th>
+      <th>Review</th>
+      <th>Version</th>
+      <th>Sentiment</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${reviews.map(r => `
+      <tr>
+        <td>${new Date(r.review_date).toLocaleDateString()}</td>
+        <td><span class="platform-badge platform-${r.platform_name}">${r.platform_name}</span></td>
+        <td class="rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</td>
+        <td>${r.author || 'Anonymous'}</td>
+        <td>${r.title || '-'}</td>
+        <td class="content-cell" title="${(r.content || '').replace(/"/g, '&quot;')}">${(r.content || '').substring(0, 150)}...</td>
+        <td>${r.app_version || '-'}</td>
+        <td>
+          <span class="badge badge-${r.sentiment_label === 'positive' ? 'success' : r.sentiment_label === 'negative' ? 'danger' : 'warning'}">
+            ${r.sentiment_label || 'N/A'}
+          </span>
+        </td>
+      </tr>
+      ${r.developer_reply ? `
+      <tr style="background: rgba(59, 130, 246, 0.05);">
+        <td colspan="8" style="padding-left: 40px;">
+          <strong>Developer Reply:</strong> ${r.developer_reply}
+        </td>
+      </tr>
+      ` : ''}
+    `).join('')}
+  </tbody>
+</table>
+
+<div style="margin-top: 20px; display: flex; gap: 10px;">
+  ${filters.offset > 0 ? `<a href="?${new URLSearchParams({...filters, offset: Math.max(0, (filters.offset || 0) - 50).toString()}).toString()}" class="btn-secondary" style="padding: 8px 16px; background: var(--bg-tertiary); border-radius: 6px;">← Previous</a>` : ''}
+  ${reviews.length >= 50 ? `<a href="?${new URLSearchParams({...filters, offset: ((filters.offset || 0) + 50).toString()}).toString()}" class="btn-secondary" style="padding: 8px 16px; background: var(--bg-tertiary); border-radius: 6px;">Next →</a>` : ''}
+</div>
+`}
+` }) %>

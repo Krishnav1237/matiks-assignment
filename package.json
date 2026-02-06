@@ -1,0 +1,53 @@
+{
+  "name": "matiks-monitor",
+  "version": "1.0.0",
+  "description": "Social Media Monitoring & Review Aggregation Tool for Matiks",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "db:init": "tsx src/db/init.ts",
+    "scrape:reddit": "tsx src/scrapers/run.ts reddit",
+    "scrape:playstore": "tsx src/scrapers/run.ts playstore",
+    "scrape:appstore": "tsx src/scrapers/run.ts appstore",
+    "scrape:all": "tsx src/scrapers/run.ts all"
+  },
+  "dependencies": {
+    "@types/ws": "^8.18.1",
+    "axios": "^1.13.4",
+    "better-sqlite3": "^11.0.0",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "google-play-scraper": "^9.1.1",
+    "google-spreadsheet": "^5.0.2",
+    "googleapis": "^140.0.0",
+    "https-proxy-agent": "^7.0.6",
+    "natural": "^7.0.7",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.45.0",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "sentiment": "^5.0.2",
+    "sharp": "^0.34.5",
+    "socks-proxy-agent": "^8.0.5",
+    "winston": "^3.13.0",
+    "ws": "^8.19.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.10",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/sentiment": "^5.0.4",
+    "tsx": "^4.15.0",
+    "typescript": "^5.4.5",
+    "vitest": "^4.0.18"
+  }
+}
