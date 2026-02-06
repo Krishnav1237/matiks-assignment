@@ -170,9 +170,15 @@ export function getMentions(filters: MentionFilters = {}): Mention[] {
     query += ' AND m.created_at >= ?';
     params.push(filters.startDate);
   }
-  if (filters.endDate) {
+  
+  // Single Filter Mode: If only start date is picked, show ONLY that day.
+  // Range Mode: If end date is also picked, use it.
+  const effectiveEndDate = filters.endDate || filters.startDate;
+  
+  if (effectiveEndDate) {
     query += ' AND m.created_at <= ?';
-    params.push(filters.endDate);
+    const end = effectiveEndDate.length === 10 ? effectiveEndDate + 'T23:59:59' : effectiveEndDate;
+    params.push(end);
   }
   
   query += ' ORDER BY m.created_at DESC';
@@ -225,9 +231,15 @@ export function getReviews(filters: ReviewFilters = {}): Review[] {
     query += ' AND r.review_date >= ?';
     params.push(filters.startDate);
   }
-  if (filters.endDate) {
+  
+  // Single Filter Mode: If only start date is picked, show ONLY that day.
+  // Range Mode: If end date is also picked, use it.
+  const effectiveEndDate = filters.endDate || filters.startDate;
+
+  if (effectiveEndDate) {
     query += ' AND r.review_date <= ?';
-    params.push(filters.endDate);
+    const end = effectiveEndDate.length === 10 ? effectiveEndDate + 'T23:59:59' : effectiveEndDate;
+    params.push(end);
   }
   
   query += ' ORDER BY r.review_date DESC';
