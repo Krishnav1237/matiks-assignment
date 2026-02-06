@@ -12,7 +12,8 @@
     "scrape:reddit": "tsx src/scrapers/run.ts reddit",
     "scrape:playstore": "tsx src/scrapers/run.ts playstore",
     "scrape:appstore": "tsx src/scrapers/run.ts appstore",
-    "scrape:all": "tsx src/scrapers/run.ts all"
+    "scrape:all": "tsx src/scrapers/run.ts all",
+    "test": "vitest run"
   },
   "dependencies": {
     "@types/ws": "^8.18.1",
@@ -26,7 +27,6 @@
     "google-spreadsheet": "^5.0.2",
     "googleapis": "^140.0.0",
     "https-proxy-agent": "^7.0.6",
-    "natural": "^7.0.7",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "playwright": "^1.45.0",

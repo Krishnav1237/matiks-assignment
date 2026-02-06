@@ -122,7 +122,7 @@ app.get('/api/reviews', (req, res) => {
 
 // System status / health
 app.get('/api/status', (req, res) => {
-  const platforms = ['reddit', 'twitter', 'linkedin', 'playstore', 'appstore'];
+  const platforms = ['reddit', 'playstore', 'appstore'];
   const rateLimits = platforms.reduce((acc, platform) => {
     acc[platform] = getRateLimitState(platform);
     return acc;

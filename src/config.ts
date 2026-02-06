@@ -61,7 +61,7 @@ const configSchema = z.object({
     views: z.string().default(path.join(rootPath, 'src', 'web', 'views')),
   }),
   
-  // Google Sheets
+  // Google Sheets (Optional)
   google: z.object({
     enabled: bool('false'),
     serviceAccountJson: z.string().default('service-account.json').transform(val => 
