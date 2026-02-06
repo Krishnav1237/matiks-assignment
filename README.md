@@ -22,6 +22,7 @@ It also **does not require official API keys** for supported platforms.
 
 ### 🌐 Multi-Platform Monitoring
 - **Reddit**: Monitors subreddits and keyword searches via `old.reddit.com`.
+- **Note**: Twitter (X) and LinkedIn are explicitly **excluded** to ensure 100% stability and avoid account bans/legal issues.
 
 - **Google Play Store**: Aggregates user reviews, ratings, and version data.
 - **Apple App Store**: Aggregates global reviews via regional RSS feeds.
@@ -36,7 +37,7 @@ It also **does not require official API keys** for supported platforms.
 - **Mobile-First Design:** Fully responsive dashboard that adapts to Phones, Tablets, and Desktops.
 - **Data Filtering:** Real-time URL-based filtering for seamless sharing.
 - **CSV Export:** One-click export of all datasets for external analysis (Excel/Tableau).
-- **Google Sheets Export:** Optional full replacement export for mentions and reviews.
+- **Google Sheets Export:** (API) Programmatic sync of mentions and reviews to Google Sheets.
 - **Status API:** `/api/status` for scheduler visibility, recent logs, and rate-limit state.
 
 ---
@@ -107,6 +108,13 @@ Open `.env` in your editor. This file controls the entire system.
 |----------|-------------|----------------|
 | `PLAYSTORE_APP_ID` | Package name | URL `id=com.example.app` part |
 | `APPSTORE_APP_ID` | Numerical App ID | URL `/id123456789` part |
+
+### Google Sheets Integration (Optional)
+| Variable | Description |
+|----------|-------------|
+| `GOOGLE_SHEETS_ENABLED` | Set to `true` to enable export endpoints. |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Path to your service account credential file (relative to root). |
+| `GOOGLE_SPREADSHEET_ID` | The ID from your Sheet URL (`docs.google.com/spreadsheets/d/.../edit`). |
 
 
 

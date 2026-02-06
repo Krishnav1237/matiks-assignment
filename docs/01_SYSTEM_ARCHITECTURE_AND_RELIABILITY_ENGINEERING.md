@@ -51,6 +51,8 @@ graph TD
     end
     
     Dashboard -->|Reads| DB
+    Dashboard -->|Triggers| Export[Export Service]
+    Export -->|Writes| Sheets[Google Sheets API]
 ```
 
 ## 2.3 Directory Structure Analysis
@@ -80,7 +82,11 @@ This file is the single source of truth for the application's state.
 - **`schema.ts`**: Database definitions.
     - **WAL Mode:** Enables Write-Ahead Logging for high concurrency (Dashboards read while Scrapers write).
     - **Tables:** `mentions`, `reviews`, `scrape_logs`, `scrape_cursors`.
-- **`queries.ts`**: Data Access Object (DAO) layer using Prepared Statements for security and speed.
+    - **`queries.ts`**: Data Access Object (DAO) layer using Prepared Statements for security and speed.
+
+### `src/core/googleSheets.ts` (Export Layer)
+- **Responsibility:** Handles authentication (JWT) and synchronization with Google Sheets API v4.
+- **Logic:** Performs a full "Clear & Replace" operation to ensuring the Sheet is an exact mirror of the database.
 
 ## 2.4 Frontend Architecture
 The system employs a **Server-Side Rendered (SSR)** architecture with **Progressive Enhancement**.

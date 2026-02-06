@@ -85,7 +85,32 @@ Standard RFC-4180 format.
 
 ---
 
+## 3.3 Google Sheets Sync (API) [Beta]
+
+For those who prefer live spreadsheets over static CSVs, the system provides a programmatic sync.
+
+**Logic**:
+- The API reads your `.env` credentials.
+- It clears the target sheet (Mentions or Reviews) and re-uploads the full dataset from the database.
+- This is an **Overwrite** operation, not an append, ensuring your Sheet is always a 1:1 mirror of the database.
+
+**How to Trigger**:
+Since this is a heavy operation, it is currently API-only to prevent accidental abuse.
+
+**Sync Mentions:**
+```bash
+curl "http://localhost:3000/api/export/sheets?type=mentions"
+```
+
+**Sync Reviews:**
+```bash
+curl "http://localhost:3000/api/export/sheets?type=reviews"
+```
+
+---
+
 # 4. Developer API Reference
+
 
 For engineers who want to build their own visualizations or integrate data into internal Dashboards (Grafana, Retool).
 
@@ -147,6 +172,10 @@ Controlled by standard Cron syntax.
 ---
 
 # 6. Troubleshooting Guide
+
+### Issue: "Google Sheets Export Failed"
+1.  **Check JSON Path:** Ensure `GOOGLE_SERVICE_ACCOUNT_JSON` points to a valid file. Use a full absolute path if the relative path fails.
+2.  **Check Permissions:** Open your Google Sheet -> Click "Share" -> specific the `client_email` from your JSON file as an **Editor**. The service account cannot write to your personal sheet unless you invite it.
 
 ### Issue: "No Data Found"
 1.  **Check Logs:** Go to the "System Logs" tab. Are there Red "Failed" entries?
