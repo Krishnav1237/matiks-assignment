@@ -4,7 +4,7 @@ export const socialLexicon = {
   'lit': 3,
   'based': 2,
   'goat': 4,
-  'trash': -3,
+  'trash': -5,
   'mid': -1,
   'cringe': -2,
   'scam': -4,
