@@ -1,132 +1,193 @@
 <%- include('layout', { body: `
-<h1 style="margin-bottom: 10px;">Dashboard</h1>
-<p style="color: var(--text-secondary); margin-bottom: 30px;">Monitor Matiks brand presence across platforms</p>
 
-<div class="stats-grid">
-  <div class="stat-card">
-    <h3>Total Mentions</h3>
-    <div class="value">${stats.mentions.reduce((sum, p) => sum + p.total, 0)}</div>
+<!-- Strict Box Aligned Header -->
+<div class="page-header" style="height: 80px; background: white; border-bottom: 1px solid #E5E7EB; padding: 0 32px; display: flex; align-items: center;">
+  <div style="flex: 1;">
+    <h1 class="page-header-title" style="font-size: 1.5rem; font-weight: 700; color: #111827; letter-spacing: -0.01em;">Overview</h1>
   </div>
-  <div class="stat-card">
-    <h3>Total Reviews</h3>
-    <div class="value">${stats.reviews.reduce((sum, p) => sum + p.total, 0)}</div>
-  </div>
-  <div class="stat-card">
-    <h3>Last 24h Mentions</h3>
-    <div class="value">${stats.last24h.mentions}</div>
-  </div>
-  <div class="stat-card">
-    <h3>Last 24h Reviews</h3>
-    <div class="value">${stats.last24h.reviews}</div>
+  <div style="font-size: 0.875rem; color: #6B7280; font-weight: 500;">
+    <span style="display: inline-block; width: 8px; height: 8px; background: #10B981; border-radius: 50%; margin-right: 6px;"></span>
+    System Online
   </div>
 </div>
 
-<div class="section">
-  <h2 class="section-title">Platform Breakdown - Mentions</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Platform</th>
-        <th>Total</th>
-        <th>Positive</th>
-        <th>Neutral</th>
-        <th>Negative</th>
-        <th>Avg Sentiment</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${stats.mentions.map(p => `
-        <tr>
-          <td><span class="platform-badge platform-${p.platform}">${p.platform}</span></td>
-          <td>${p.total}</td>
-          <td class="positive">${p.positive || 0}</td>
-          <td class="neutral">${p.neutral || 0}</td>
-          <td class="negative">${p.negative || 0}</td>
-          <td>${p.avg_sentiment ? p.avg_sentiment.toFixed(3) : 'N/A'}</td>
-        </tr>
-      `).join('')}
-    </tbody>
-  </table>
-</div>
+<!-- Dashboard Canvas: Fixed Height (100vh - 80px), No Scroll -->
+<div class="dashboard-canvas">
 
-<div class="section">
-  <h2 class="section-title">Platform Breakdown - Reviews</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Store</th>
-        <th>Total</th>
-        <th>Avg Rating</th>
-        <th>Positive (4-5★)</th>
-        <th>Negative (1-2★)</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${stats.reviews.map(p => `
-        <tr>
-          <td><span class="platform-badge platform-${p.platform}">${p.platform}</span></td>
-          <td>${p.total}</td>
-          <td class="rating">${p.avg_rating ? '★ ' + p.avg_rating.toFixed(1) : 'N/A'}</td>
-          <td class="positive">${p.positive_reviews || 0}</td>
-          <td class="negative">${p.negative_reviews || 0}</td>
-        </tr>
-      `).join('')}
-    </tbody>
-  </table>
-</div>
+  <!-- TOP ROW: HERO METRICS (Fixed Height) -->
+  <div class="dashboard-row-metrics">
+    
+    <!-- Total Mentions -->
+    <div class="stat-card" style="justify-content: center;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+        <div class="stat-label">Total Mentions</div>
+        <div style="background: #F3F4F6; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #4B5563;">All Time</div>
+      </div>
+      <div class="stat-value">${stats.mentions.reduce((sum, p) => sum + p.total, 0)}</div>
+    </div>
 
-<div class="section">
-  <h2 class="section-title">Recent Scrape Jobs</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Time</th>
-        <th>Platform</th>
-        <th>Status</th>
-        <th>Found</th>
-        <th>New</th>
-        <th>Error</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${recentLogs.map(log => `
-        <tr>
-          <td>${new Date(log.started_at).toLocaleString()}</td>
-          <td><span class="platform-badge platform-${log.platform}">${log.platform}</span></td>
-          <td><span class="log-status-${log.status}">${log.status}</span></td>
-          <td>${log.items_found}</td>
-          <td>${log.items_new}</td>
-          <td style="color: var(--danger);">${log.error || '-'}</td>
-        </tr>
-      `).join('')}
-    </tbody>
-  </table>
-</div>
+    <!-- Total Reviews -->
+    <div class="stat-card" style="justify-content: center;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+        <div class="stat-label">Total Reviews</div>
+        <div style="background: #F3F4F6; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #4B5563;">Aggregated</div>
+      </div>
+      <div class="stat-value">${stats.reviews.reduce((sum, p) => sum + p.total, 0)}</div>
+    </div>
 
-<div class="section">
-  <h2 class="section-title">Recent Mentions</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Platform</th>
-        <th>Author</th>
-        <th>Content</th>
-        <th>Sentiment</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${recentMentions.map(m => `
-        <tr>
-          <td>${new Date(m.created_at).toLocaleDateString()}</td>
-          <td><span class="platform-badge platform-${m.platform_name}">${m.platform_name}</span></td>
-          <td>${m.author || 'Unknown'}</td>
-          <td class="content-cell">${(m.content || '').substring(0, 100)}...</td>
-          <td><span class="badge badge-${m.sentiment_label === 'positive' ? 'success' : m.sentiment_label === 'negative' ? 'danger' : 'warning'}">${m.sentiment_label || 'N/A'}</span></td>
-        </tr>
-      `).join('')}
-    </tbody>
-  </table>
-  <p style="margin-top: 15px;"><a href="/mentions">View all mentions →</a></p>
+    <!-- Mentions (24h) -->
+    <div class="stat-card" style="justify-content: center;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+        <div class="stat-label">Mentions (24h)</div>
+        <div style="background: #ECFDF5; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #059669;">+${stats.last24h.mentions}</div>
+      </div>
+      <div class="stat-value">${stats.last24h.mentions}</div>
+    </div>
+
+    <!-- Reviews (24h) -->
+    <div class="stat-card" style="justify-content: center;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+        <div class="stat-label">Reviews (24h)</div>
+        <div style="background: #ECFDF5; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #059669;">+${stats.last24h.reviews}</div>
+      </div>
+      <div class="stat-value">${stats.last24h.reviews}</div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM ROW: CONTENT (Fills Remaining Space) -->
+  <div class="dashboard-row-content">
+    
+    <!-- LEFT: ANALYTICS SPLIT (Stacked, Natural Height) -->
+    <div style="display: flex; flex-direction: column; gap: 24px; min-height: 0;">
+      
+      <!-- Sentiment Table (Always Visible, No Scroll) -->
+      <div class="stat-card" style="padding: 0; min-height: fit-content; flex: 1;">
+        <div style="padding: 16px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center; background: #F9FAFB;">
+          <h3 style="font-size: 1rem; font-weight: 600; color: #111827;">Sentiment by Platform</h3>
+           <a href="/mentions" style="font-size: 0.75rem; color: #6B7280; font-weight: 500; text-decoration: none;">View All &rarr;</a>
+        </div>
+        <div style="flex: 1; overflow: hidden;"> <!-- removed scroll-area -->
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Volume</th>
+                <th>Sentiment</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${stats.mentions.slice(0, 4).map(p => `
+                <tr>
+                  <td style="font-weight: 500;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                      <span style="width: 6px; height: 6px; border-radius: 50%; background: ${p.platform === 'reddit' ? '#FF4500' : '#1DA1F2'};"></span>
+                      ${p.platform.charAt(0).toUpperCase() + p.platform.slice(1)}
+                    </span>
+                  </td>
+                  <td style="font-weight: 600;">${p.total}</td>
+                  <td>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                       <span class="badge-modern badge-positive" style="font-size: 0.7rem;">${p.positive || 0}</span>
+                       <span class="badge-modern badge-negative" style="font-size: 0.7rem;">${p.negative || 0}</span>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+              ${stats.mentions.length === 0 ? '<tr><td colspan="3" style="text-align: center; padding: 20px; color: #9CA3AF;">No data</td></tr>' : ''}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Ratings Table (Always Visible, No Scroll) -->
+      <div class="stat-card" style="padding: 0; min-height: fit-content; flex: 1;">
+         <div style="padding: 16px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center; background: #F9FAFB;">
+          <h3 style="font-size: 1rem; font-weight: 600; color: #111827;">Store Ratings</h3>
+          <a href="/reviews" style="font-size: 0.75rem; color: #6B7280; font-weight: 500; text-decoration: none;">View All &rarr;</a>
+        </div>
+        <div style="flex: 1; overflow: hidden;"> <!-- removed scroll-area -->
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Store</th>
+                <th>Rating</th>
+                <th>Feedback</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${stats.reviews.slice(0, 4).map(p => `
+                <tr>
+                  <td style="font-weight: 500;">
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                       <span style="width: 6px; height: 6px; border-radius: 50%; background: ${p.platform === 'appstore' ? '#007AFF' : '#00C853'};"></span>
+                      ${p.platform === 'appstore' ? 'App Store' : 'Play Store'}
+                    </span>
+                  </td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <span style="font-weight: 700; color: #1F2937;">${p.avg_rating ? p.avg_rating.toFixed(1) : '-'}</span>
+                      <span style="font-size: 0.8rem; color: #F59E0B;">★</span>
+                    </div>
+                  </td>
+                  <td>
+                     <div style="display: flex; gap: 6px;">
+                       <span class="badge-modern badge-positive" style="font-size: 0.7rem;">${p.positive_reviews || 0}</span>
+                       <span class="badge-modern badge-negative" style="font-size: 0.7rem;">${p.negative_reviews || 0}</span>
+                     </div>
+                  </td>
+                </tr>
+              `).join('')}
+              ${stats.reviews.length === 0 ? '<tr><td colspan="3" style="text-align: center; padding: 20px; color: #9CA3AF;">No data</td></tr>' : ''}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: SYSTEM FEED (Scroll if needed, but designed to fit) -->
+    <div class="stat-card" style="padding: 0; min-height: 0;">
+      <div style="padding: 16px 24px; border-bottom: 1px solid #E5E7EB; background: #F9FAFB; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1rem; font-weight: 600; color: #111827;">System Activity</h3>
+        <a href="/logs" style="font-size: 0.75rem; color: #6B7280; font-weight: 500; text-decoration: none;">View All &rarr;</a>
+      </div>
+      
+      <div class="card-scroll-area" style="padding: 0;">
+        <table class="modern-table">
+          <thead>
+             <tr>
+              <th style="background: white; position: sticky; top: 0; padding-left: 24px;">Time</th>
+              <th style="background: white; position: sticky; top: 0;">Job</th>
+              <th style="background: white; position: sticky; top: 0; text-align: right; padding-right: 24px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recentLogs.slice(0, 15).map(log => `
+              <tr>
+                <td style="padding-left: 24px; font-family: monospace; font-size: 0.8rem; color: #6B7280;">
+                  ${new Date(log.started_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </td>
+                <td>
+                  <span style="font-weight: 500; color: #374151; text-transform: capitalize;">${log.platform}</span>
+                </td>
+                <td style="text-align: right; padding-right: 24px;">
+                   <span class="badge-modern ${log.status === 'success' ? 'badge-neutral' : log.status === 'running' ? 'badge-warning' : 'badge-negative'}" style="font-size: 0.7rem;">
+                    ${log.status}
+                  </span>
+                </td>
+              </tr>
+            `).join('')}
+             ${recentLogs.length === 0 ? '<tr><td colspan="3" style="text-align: center; padding: 20px; color: #9CA3AF;">No active jobs</td></tr>' : ''}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 12px 24px; border-top: 1px solid #E5E7EB; background: #F9FAFB; font-size: 0.7rem; color: #9CA3AF; text-align: center;">
+        Auto-refreshes every 60s
+      </div>
+    </div>
+
+  </div>
+
 </div>
 ` }) %>

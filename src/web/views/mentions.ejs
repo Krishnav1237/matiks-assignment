@@ -1,97 +1,139 @@
+<%
+  const buildParams = (extra) => {
+    const params = new URLSearchParams();
+    const all = { ...filters, ...extra };
+    for (const [k, v] of Object.entries(all)) {
+      if (v !== undefined && v !== null && v !== '' && v !== 'undefined') params.append(k, v);
+    }
+    return params.toString();
+  };
+%>
 <%- include('layout', { body: `
-<h1 style="margin-bottom: 10px;">Social Media Mentions</h1>
-<p style="color: var(--text-secondary); margin-bottom: 20px;">Track brand mentions across Reddit, Twitter, and LinkedIn</p>
 
-<form class="filters" method="GET">
-  <div class="filter-group">
-    <label>Platform</label>
-    <select name="platform">
-      <option value="">All Platforms</option>
-      <option value="reddit" ${filters.platform === 'reddit' ? 'selected' : ''}>Reddit</option>
-      <option value="twitter" ${filters.platform === 'twitter' ? 'selected' : ''}>Twitter</option>
-      <option value="linkedin" ${filters.platform === 'linkedin' ? 'selected' : ''}>LinkedIn</option>
-    </select>
+<!-- Strict Box Aligned Header -->
+<div class="page-header" style="height: 80px; background: white; border-bottom: 1px solid #E5E7EB; padding: 0 32px; display: flex; align-items: center;">
+  <div style="flex: 1;">
+    <h1 class="page-header-title" style="font-size: 1.5rem; font-weight: 700; color: #111827; letter-spacing: -0.01em;">Social Mentions</h1>
   </div>
-  <div class="filter-group">
-    <label>Sentiment</label>
-    <select name="sentiment">
-      <option value="">All</option>
-      <option value="positive" ${filters.sentiment === 'positive' ? 'selected' : ''}>Positive</option>
-      <option value="neutral" ${filters.sentiment === 'neutral' ? 'selected' : ''}>Neutral</option>
-      <option value="negative" ${filters.sentiment === 'negative' ? 'selected' : ''}>Negative</option>
-    </select>
-  </div>
-  <div class="filter-group">
-    <label>Start Date</label>
-    <input type="date" name="startDate" value="${filters.startDate || ''}">
-  </div>
-  <div class="filter-group">
-    <label>End Date</label>
-    <input type="date" name="endDate" value="${filters.endDate || ''}">
-  </div>
-  <div class="filter-group">
-    <label>Search</label>
-    <input type="text" name="search" placeholder="Search content..." value="${filters.search || ''}">
-  </div>
-  <div class="filter-group" style="justify-content: flex-end;">
-    <label>&nbsp;</label>
-    <button type="submit">Apply Filters</button>
-  </div>
-  <div class="filter-group" style="justify-content: flex-end;">
-    <label>&nbsp;</label>
-    <a href="/api/export/mentions" class="btn-secondary" style="padding: 10px 20px; background: var(--bg-tertiary); border-radius: 6px;">Export CSV</a>
-  </div>
-</form>
-
-${mentions.length === 0 ? `
-<div class="empty-state">
-  <h3>No mentions found</h3>
-  <p>Run the scrapers to collect data or adjust your filters.</p>
+  <!-- Optional: Add controls here if needed, or keep clean like dashboard -->
 </div>
-` : `
-<table>
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Platform</th>
-      <th>Author</th>
-      <th>Content</th>
-      <th>Engagement</th>
-      <th>Sentiment</th>
-      <th>Link</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${mentions.map(m => `
-      <tr>
-        <td>${new Date(m.created_at).toLocaleDateString()}</td>
-        <td><span class="platform-badge platform-${m.platform_name}">${m.platform_name}</span></td>
-        <td>
-          ${m.author_url ? `<a href="${m.author_url}" target="_blank">${m.author || 'Unknown'}</a>` : (m.author || 'Unknown')}
-        </td>
-        <td class="content-cell" title="${(m.content || '').replace(/"/g, '&quot;')}">${(m.content || '').substring(0, 150)}...</td>
-        <td>
-          <span title="Likes">👍 ${m.engagement_likes}</span>
-          <span title="Comments">💬 ${m.engagement_comments}</span>
-          ${m.engagement_shares > 0 ? `<span title="Shares">🔄 ${m.engagement_shares}</span>` : ''}
-        </td>
-        <td>
-          <span class="badge badge-${m.sentiment_label === 'positive' ? 'success' : m.sentiment_label === 'negative' ? 'danger' : 'warning'}">
-            ${m.sentiment_label || 'N/A'}
-          </span>
-          <small style="color: var(--text-secondary); margin-left: 5px;">${m.sentiment_score ? m.sentiment_score.toFixed(2) : ''}</small>
-        </td>
-        <td>
-          ${m.url ? `<a href="${m.url}" target="_blank">View →</a>` : '-'}
-        </td>
-      </tr>
-    `).join('')}
-  </tbody>
-</table>
 
-<div style="margin-top: 20px; display: flex; gap: 10px;">
-  ${filters.offset > 0 ? `<a href="?${new URLSearchParams({...filters, offset: Math.max(0, (filters.offset || 0) - 50).toString()}).toString()}" class="btn-secondary" style="padding: 8px 16px; background: var(--bg-tertiary); border-radius: 6px;">← Previous</a>` : ''}
-  ${mentions.length >= 50 ? `<a href="?${new URLSearchParams({...filters, offset: ((filters.offset || 0) + 50).toString()}).toString()}" class="btn-secondary" style="padding: 8px 16px; background: var(--bg-tertiary); border-radius: 6px;">Next →</a>` : ''}
+<!-- Tier 2: Sticky Filter Toolbar (Professional Spacing) -->
+<div style="position: sticky; top: 0; z-index: 20; background: #F9FAFB; padding: 24px 32px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
+  
+  <!-- Left: Filters -->
+  <div style="display: flex; gap: 16px; align-items: center; flex: 1;">
+    <form id="navbarFilterForm" method="GET" style="display: flex; gap: 16px; align-items: center; width: 100%;">
+      
+      <!-- Platform Select -->
+      <select class="filter-pill" disabled style="height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid #D1D5DB; background: #F3F4F6; color: #9CA3AF; font-size: 0.875rem; cursor: not-allowed; min-width: 120px;">
+        <option>Reddit</option>
+      </select>
+      
+      <!-- Sentiment Select -->
+      <select name="sentiment" onchange="this.form.submit()" style="height: 40px; padding: 0 36px 0 16px; border-radius: 8px; border: 1px solid #D1D5DB; background: white; color: #374151; font-size: 0.875rem; cursor: pointer; min-width: 140px;">
+        <option value="">All Sentiment</option>
+        <option value="positive" ${filters.sentiment === 'positive' ? 'selected' : ''}>Positive</option>
+        <option value="neutral" ${filters.sentiment === 'neutral' ? 'selected' : ''}>Neutral</option>
+        <option value="negative" ${filters.sentiment === 'negative' ? 'selected' : ''}>Negative</option>
+      </select>
+      
+      <!-- Date Picker -->
+      <input type="date" name="startDate" value="${filters.startDate || ''}" onchange="this.form.submit()" style="height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid #D1D5DB; background: white; color: #374151; font-size: 0.875rem; cursor: pointer;">
+      
+      <!-- Search Input -->
+      <div style="position: relative; flex: 1; max-width: 320px;">
+        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9CA3AF;">🔍</span>
+        <input type="text" name="search" value="${filters.search || ''}" placeholder="Search mentions..." style="width: 100%; height: 40px; padding: 0 16px 0 36px; border-radius: 8px; border: 1px solid #D1D5DB; background: white; color: #374151; font-size: 0.875rem;">
+      </div>
+
+      <!-- Hidden submit -->
+      <input type="submit" style="display: none;">
+    </form>
+  </div>
+
+  <!-- Right: Actions -->
+  <div style="display: flex; gap: 16px; align-items: center; padding-left: 24px;">
+    <div style="color: #6B7280; font-size: 0.875rem; font-weight: 500;">
+      Showing <strong style="color: #111827;">${mentions.length}</strong> results
+    </div>
+    <a href="/api/export/mentions" style="height: 40px; padding: 0 20px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px; background: #2563EB; color: white; text-decoration: none; font-size: 0.875rem; transition: background 0.2s;">
+      <span>⬇</span> Export CSV
+    </a>
+  </div>
+
 </div>
-`}
+
+<!-- Full Width Data Table -->
+  ${mentions.length === 0 ? `
+    <div class="empty-state card" style="margin: var(--space-6);">
+      <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
+      <h3 class="text-lg font-medium text-primary">No mentions found</h3>
+      <p class="text-subtle">Try adjusting your filters.</p>
+    </div>
+  ` : `
+    <div class="table-container" style="border-top: 1px solid var(--border); background: white;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 120px; padding-left: var(--space-6);">Date</th>
+            <th style="width: 100px;">Platform</th>
+            <th>Feedback</th>
+            <th style="width: 180px;">Engagement</th>
+            <th style="width: 120px;">Sentiment</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${mentions.map(m => `
+            <tr>
+              <td class="text-subtle" style="white-space: nowrap; vertical-align: top; padding-left: var(--space-6);">${new Date(m.created_at).toLocaleDateString()}</td>
+              <td style="vertical-align: top;">
+                <span class="badge" style="background: #ff45001a; color: #ff4500;">Reddit</span>
+              </td>
+              <td style="vertical-align: top;">
+                <div class="mb-1 text-sm font-bold text-primary">${m.author || 'Unknown'}</div>
+                <div class="text-sm text-primary" style="line-height: 1.5; margin-bottom: 6px; max-width: 800px;">
+                  ${(m.content || '').length > 250 
+                    ? (m.content || '').substring(0, 250).replace(/"/g, '&quot;') + '...' 
+                    : (m.content || '').replace(/"/g, '&quot;')}
+                </div>
+                ${m.url ? `
+                  <a href="${m.url}" target="_blank" class="text-xs font-medium text-primary hover:text-primary-hover hover:underline inline-flex items-center gap-1" style="color: var(--primary);">
+                    View on Reddit ↗
+                  </a>
+                ` : ''}
+              </td>
+              <td style="vertical-align: top;">
+                <div class="flex gap-2">
+                   <div class="engagement-badge" title="Upvotes">
+                     <span style="font-size: 14px;">👍</span> ${m.engagement_likes}
+                   </div>
+                   <div class="engagement-badge" title="Comments">
+                     <span style="font-size: 14px;">💬</span> ${m.engagement_comments}
+                   </div>
+                </div>
+              </td>
+              <td style="vertical-align: top;">
+                <span class="badge badge-${m.sentiment_label === 'positive' ? 'pos' : m.sentiment_label === 'negative' ? 'neg' : 'neu'}">
+                  ${m.sentiment_label || 'neu'}
+                </span>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Centered Professional Pagination -->
+    <div style="display: flex; justify-content: center; align-items: center; margin-top: 0; padding: 32px; border-top: 1px solid #E5E7EB; background: white; gap: 16px;">
+       ${filters.offset > 0 ? `<a href="?${buildParams({ offset: Math.max(0, (filters.offset || 0) - 50) })}" class="btn btn-secondary" style="height: 40px; padding: 0 24px; font-weight: 500;">Previous</a>` : ''}
+       
+       <div style="color: #6B7280; font-size: 0.875rem; font-variant-numeric: tabular-nums;">
+         Page <span style="color: #111827; font-weight: 600;">${Math.floor((filters.offset || 0) / 50) + 1}</span>
+       </div>
+
+       ${mentions.length >= 50 ? `<a href="?${buildParams({ offset: (filters.offset || 0) + 50 })}" class="btn btn-secondary" style="height: 40px; padding: 0 24px; font-weight: 500;">Next</a>` : ''}
+    </div>
+  `}
 ` }) %>
+

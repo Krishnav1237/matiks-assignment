@@ -14,7 +14,7 @@ app.set('view engine', 'ejs');
 app.set('views', config.paths.views);
 
 // Static files
-app.use('/static', express.static(path.join(config.paths.root, 'public')));
+app.use('/static', express.static(path.join(config.paths.root, 'src', 'web', 'public')));
 
 // JSON parsing
 app.use(express.json());
